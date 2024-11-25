@@ -1,0 +1,1 @@
+Core business entities (e.g., Message)
