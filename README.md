@@ -2,6 +2,8 @@
 
 The Universal Message Translator app enables users to translate incoming messages (e.g., SMS) from one language to another in real-time. It provides a seamless experience for users who wish to understand messages in their preferred language. The project is designed for scalability, supporting multiple languages, data storage, and cross-platform functionality in the future.
 
+Use [Expo Router](https://docs.expo.dev/router/introduction/) with [Nativewind](https://www.nativewind.dev/v4/overview/) styling.
+
 # Tech Stack
 
 - Frontend: React Native (for cross-platform mobile development)
