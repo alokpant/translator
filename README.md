@@ -4,21 +4,22 @@ The Universal Message Translator app enables users to translate incoming message
 
 # Tech Stack
 
-Frontend: React Native (for cross-platform mobile development)
-State Management: Redux
-APIs:
-    Google Translate API (translation functionality)
-Authentication:
-    Firebase Authentication (Google and Apple sign-in)
-Backend:
-    Firebase Firestore (database for storing user preferences, translations, etc.)
-Cloud Storage: Firebase Storage (for storing app-related data)
-Build and Deployment:
-    Android Studio / Xcode (for building and testing on Android and iOS)
-    App Store / Google Play Store for app distribution
+- Frontend: React Native (for cross-platform mobile development)
+- State Management: Redux
+- APIs:
+  - Google Translate API (translation functionality)
+- Authentication:
+  - Firebase Authentication (Google and Apple sign-in)
+- Backend:
+  - Firebase Firestore (database for storing user preferences, translations, etc.)
+- Cloud Storage: Firebase Storage (for storing app-related data)
+- Build and Deployment:
+  - Android Studio / Xcode (for building and testing on Android and iOS)
+  - App Store / Google Play Store for app distribution
 
 # Database Diagram
 
+```
 +----------------------+
 |       Users          |
 +----------------------+
@@ -40,6 +41,7 @@ Build and Deployment:
 | target_language      |
 | created_at           |
 +----------------------+
+```
 
 # Project Steps
 Step 1: Create Project
