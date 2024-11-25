@@ -46,7 +46,7 @@ The Universal Message Translator app enables users to translate incoming message
 # Project Steps
 Step 1: Create Project
 - Initialize a new React Native project using npx react-native init UniversalTranslator.
-- Install required dependencies such as Redux, Firebase, and Axios for API calls.
+- Install required dependencies such as Install dependencies such as Firebase, and TanStack Query.
 
 Step 2: Read Incoming Messages
 - Use the React Native Permissions API and SMS Reader plugins to request permissions and read incoming SMS messages on Android.
