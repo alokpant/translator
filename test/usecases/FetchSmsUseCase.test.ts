@@ -22,7 +22,6 @@ const MOCK_MESSAGES: Message[] = [
 
 const FILTER_MOCK = { read: 0 };
 
-
 describe('FetchSmsUseCase', () => {
   it('should fetch unread messages', async () => {
     const mockSmsRepository: SmsRepository = {
