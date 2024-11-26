@@ -16,6 +16,9 @@
       ]
     ],
     "name": "translator",
-    "slug": "translator"
+    "slug": "translator",
+    "android": {
+      "package": "com.anonymous.translator"
+    }
   }
 }
