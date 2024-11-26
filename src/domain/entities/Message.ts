@@ -14,3 +14,9 @@ export interface Message {
   // Flag to indicate if the message has been read
   read: boolean;
 }
+
+// interface SMSMessage {
+//   originatingAddress: string;
+//   body: string;
+//   timestamp: number;
+// }

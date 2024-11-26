@@ -1,95 +1,122 @@
-import { Link } from "expo-router";
-import React from "react";
-import { Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Message } from "@/domain/entities/Message";
+import React, { useEffect, useState } from "react";
+import { FlatList, Text, View } from "react-native";
+import SmsListener from 'react-native-android-sms-listener';
+import {
+  Button,
+  DataTable,
+  Title,
+  Provider as PaperProvider,
+  Divider,
+} from "react-native-paper";
+import useApp from "@/app/hooks/useApp";
+
+const PermissionStatus = ({
+  READ_SMS_PERMISSION_STATUS,
+  RECEIVE_SMS_PERMISSION_STATUS,
+  requestReadSMSPermission,
+}) => {
+  console.log(
+    "READ_SMS_PERMISSION_STATUS, RECEIVE_SMS_PERMISSION_STATUS:",
+    READ_SMS_PERMISSION_STATUS,
+    RECEIVE_SMS_PERMISSION_STATUS
+  );
+  return (
+    <DataTable>
+      <DataTable.Header>
+        <DataTable.Title>Permission Status</DataTable.Title>
+      </DataTable.Header>
+
+      <DataTable.Row>
+        <DataTable.Cell>READ_SMS:</DataTable.Cell>
+        <DataTable.Cell>
+          {READ_SMS_PERMISSION_STATUS + "" || "null"}
+        </DataTable.Cell>
+      </DataTable.Row>
+      <DataTable.Row>
+        <DataTable.Cell>RECEIVE_SMS:</DataTable.Cell>
+        <DataTable.Cell>
+          {RECEIVE_SMS_PERMISSION_STATUS + "" || "null"}
+        </DataTable.Cell>
+      </DataTable.Row>
+
+      {(!READ_SMS_PERMISSION_STATUS || !RECEIVE_SMS_PERMISSION_STATUS) && (
+        <Button onPress={requestReadSMSPermission} mode="contained">
+          Request Permission
+        </Button>
+      )}
+    </DataTable>
+  );
+};
 
 export default function Page() {
-  return (
-    <View className="flex flex-1">
-      <Header />
-      <Content />
-      <Footer />
-    </View>
-  );
-}
+  const {
+    appState,
+    buttonClickHandler,
+    checkPermissions,
+    errorCallbackStatus,
+    hasReceiveSMSPermission,
+    hasReadSMSPermission,
+    requestReadSMSPermission,
+    smsPermissionState,
+    successCallbackStatus,
+    smsMessageBody,
+    smsMessageNumber,
+    smsError,
+  } = useApp();
 
-function Content() {
   return (
-    <View className="flex-1">
-      <View className="py-12 md:py-24 lg:py-32 xl:py-48">
-        <View className="px-4 md:px-6">
-          <View className="flex flex-col items-center gap-4 text-center">
-            <Text
-              role="heading"
-              className="text-3xl text-center native:text-5xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl"
-            >
-              Welcome to Project ACME
-            </Text>
-            <Text className="mx-auto max-w-[700px] text-lg text-center text-gray-500 md:text-xl dark:text-gray-400">
-              Discover and collaborate on acme. Explore our services now.
-            </Text>
+    <PaperProvider>
+      <View>
+        {/* <StatusBar style="auto" /> */}
+        <Title>ExpoReadSMS - Test Application (Expo)</Title>
 
-            <View className="gap-4">
-              <Link
-                suppressHighlighting
-                className="flex h-9 items-center justify-center overflow-hidden rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-50 web:shadow ios:shadow transition-colors hover:bg-gray-900/90 active:bg-gray-400/90 web:focus-visible:outline-none web:focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
-                href="/"
-              >
-                Explore
-              </Link>
-            </View>
-          </View>
-        </View>
+        <DataTable>
+          <DataTable.Row>
+            <DataTable.Cell>App State:</DataTable.Cell>
+            <DataTable.Cell>{appState}</DataTable.Cell>
+          </DataTable.Row>
+        </DataTable>
+        <Divider />
+        <PermissionStatus
+          READ_SMS_PERMISSION_STATUS={hasReadSMSPermission}
+          RECEIVE_SMS_PERMISSION_STATUS={hasReceiveSMSPermission}
+          requestReadSMSPermission={requestReadSMSPermission}
+        />
+        <DataTable>
+          <DataTable.Row>
+            <DataTable.Cell>
+              <Text>smsPermissionState:</Text>
+            </DataTable.Cell>
+            <DataTable.Cell>{smsPermissionState + "" || "null"}</DataTable.Cell>
+          </DataTable.Row>
+          <DataTable.Row>
+            <DataTable.Cell>
+              <Text>smsMessageNumber:</Text>
+            </DataTable.Cell>
+            <DataTable.Cell>{smsMessageNumber + "" || "null"}</DataTable.Cell>
+          </DataTable.Row>
+          <DataTable.Row>
+            <DataTable.Cell>
+              <Text>smsMessageBody:</Text>
+            </DataTable.Cell>
+            <DataTable.Cell>{smsMessageBody + "" || "null"}</DataTable.Cell>
+          </DataTable.Row>
+          <DataTable.Row>
+            <DataTable.Cell>
+              <Text>smsError:</Text>
+            </DataTable.Cell>
+            <DataTable.Cell>{smsError + "" || "null"}</DataTable.Cell>
+          </DataTable.Row>
+
+          <Button onPress={checkPermissions} mode="contained">
+            Recheck permission state
+          </Button>
+          <Button onPress={buttonClickHandler} mode="contained">
+            Start
+          </Button>
+        </DataTable>
       </View>
-    </View>
-  );
-}
-
-function Header() {
-  const { top } = useSafeAreaInsets();
-  return (
-    <View style={{ paddingTop: top }}>
-      <View className="px-4 lg:px-6 h-14 flex items-center flex-row justify-between ">
-        <Link className="font-bold flex-1 items-center justify-center" href="/">
-          ACME
-        </Link>
-        <View className="flex flex-row gap-4 sm:gap-6">
-          <Link
-            className="text-md font-medium hover:underline web:underline-offset-4"
-            href="/"
-          >
-            About
-          </Link>
-          <Link
-            className="text-md font-medium hover:underline web:underline-offset-4"
-            href="/"
-          >
-            Product
-          </Link>
-          <Link
-            className="text-md font-medium hover:underline web:underline-offset-4"
-            href="/"
-          >
-            Pricing
-          </Link>
-        </View>
-      </View>
-    </View>
-  );
-}
-
-function Footer() {
-  const { bottom } = useSafeAreaInsets();
-  return (
-    <View
-      className="flex shrink-0 bg-gray-100 native:hidden"
-      style={{ paddingBottom: bottom }}
-    >
-      <View className="py-6 flex-1 items-start px-4 md:px-6 ">
-        <Text className={"text-center text-gray-700"}>
-          © {new Date().getFullYear()} Me
-        </Text>
-      </View>
-    </View>
+    </PaperProvider>
   );
 }

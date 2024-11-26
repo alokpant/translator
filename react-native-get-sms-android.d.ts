@@ -1,5 +1,6 @@
 declare module "react-native-get-sms-android" {
-  export default {
+  const SmsAndroid = {
     list: (filter: string, fail: Function, success: Function) => void;
   }
+  export default SmsAndroid;
 }
