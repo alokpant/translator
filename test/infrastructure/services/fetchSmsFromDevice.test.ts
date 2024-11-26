@@ -1,11 +1,13 @@
 import { Message } from "@/domain/entities/Message";
 import fetchSmsFromDevice from "@/infrastructure/services/fetchSmsFromDevice";
 import { PermissionsAndroid } from "react-native";
-import { describe, expect, it, vi } from "vitest";
-// import SmsAndroid from 'react-native-get-sms-android'
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import SmsAndroid from 'react-native-get-sms-android'
 
 vi.mock('react-native-get-sms-android', () => ({
-  list: vi.fn(),
+  default: {
+    list: vi.fn(),
+  }
 }));
 
 vi.mock('react-native', () => ({
@@ -44,41 +46,35 @@ const MOCK_MESSAGES: Message[] = [
 ];
 
 describe('fetchSmsFromDevice', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+  
   it('should fetch SMS when permission is granted', async () => {
-    PermissionsAndroid.request.mockResolvedValue(PermissionsAndroid.RESULTS.GRANTED);
-    const mockSmsList = JSON.stringify(MOCK_MESSAGES);
-    const SmsAndroid = require('react-native-get-sms-android');
-    SmsAndroid.list.mockImplementation((filter, failCallback, successCallback) => {
-      successCallback(2, mockSmsList);  // Simulate successful response
+    vi.mocked(PermissionsAndroid.request).mockResolvedValue(PermissionsAndroid.RESULTS.GRANTED);
+    SmsAndroid.list.mockImplementation((filter, fail, success) => {
+      success(2, JSON.stringify(MOCK_MESSAGES));
     });
 
-    // Act
-    const result = await fetchSmsFromDevice();
-
-    // Assert
-    expect(PermissionsAndroid.request).toHaveBeenCalledWith(
-      PermissionsAndroid.PERMISSIONS.READ_SMS,
-      expect.objectContaining({
-        title: 'Read SMS',
-        message: 'Need access to read SMS',
-      })
-    );
-    expect(SmsAndroid.list).toHaveBeenCalled();
-    expect(result).toEqual(MOCK_MESSAGES);
+    const messages = await fetchSmsFromDevice();
+    expect(messages).toEqual(MOCK_MESSAGES);
+    expect(PermissionsAndroid.request).toHaveBeenCalledWith(PermissionsAndroid.PERMISSIONS.READ_SMS, expect.any(Object));
+    expect(SmsAndroid.list).toHaveBeenCalledWith(expect.any(String), expect.any(Function), expect.any(Function));
   });
 
-  // it('should throw an error when permission is denied', async () => {
-  //   vi.spyOn(PermissionsAndroid, 'request').mockResolvedValue(PermissionsAndroid.RESULTS.DENIED);
-  
-  //   const fetchSMS = await fetchSmsFromDevice({});
+  it('should throw an error when permission is denied', async () => {
+    const permissionDeniedMessage = 'SMS Permission denied';
+    vi.mocked(PermissionsAndroid.request).mockResolvedValue(PermissionsAndroid.RESULTS.DENIED);
     
-  // });
+    await expect(fetchSmsFromDevice()).rejects.toThrow(permissionDeniedMessage);
+  });
 
   it('should throw an error when fetching SMS fails', async () => {
-    PermissionsAndroid.request.mockResolvedValue({});
-
-    await fetchSmsFromDevice();
-
-    expect(PermissionsAndroid.request).toBeCalled();
+    const errorMessage = 'Failed to fetch SMS';
+    vi.mocked(PermissionsAndroid.request).mockResolvedValue(PermissionsAndroid.RESULTS.GRANTED);
+    SmsAndroid.list.mockImplementation((filter, fail, success) => {
+      fail(errorMessage);
+    });
+    await expect(fetchSmsFromDevice()).rejects.toThrow(errorMessage);
   });
 });
