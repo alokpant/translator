@@ -95,19 +95,6 @@ const useApp = () => {
     console.log(smsPermissionState, 'sms permission state changed');
   }, [smsPermissionState]);
 
-  useEffect(() => {
-    // console.log('---- Sms message changed')
-    // console.log('')
-    // console.log('')
-    // console.log('')
-    // console.log(smsMessagesData);
-    // console.log('')
-    // console.log('')
-    // console.log('')
-    // console.log('---- Sms message changed')
-  }, [smsMessagesData]);
-
-
   return {
     appState,
     buttonClickHandler,

@@ -2,7 +2,7 @@ import { SmsMessage } from '@/domain/entities/Message';
 import { PermissionsAndroid } from 'react-native'
 import SmsAndroid from 'react-native-get-sms-android'
 
-export default async function fetchSmsFromDevice(filter?: Record<string, any>): Promise<SmsMessage[]> {
+export default async function fetchSmsFromDevice(filter?: MessageInputI): Promise<SmsMessage[]> {
   try {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.READ_SMS,
@@ -20,7 +20,8 @@ export default async function fetchSmsFromDevice(filter?: Record<string, any>): 
         SmsAndroid.list(
           JSON.stringify({
             box: 'inbox',
-            maxCount: 10,
+            maxCount: 100,
+            sortOrder: 'date DESC',
             ...filter,
           }),
           (fail) => reject(fail),

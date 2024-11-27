@@ -12,11 +12,6 @@ const PermissionStatus = ({
   RECEIVE_SMS_PERMISSION_STATUS,
   requestReadSMSPermission,
 }) => {
-  console.log(
-    "READ_SMS_PERMISSION_STATUS, RECEIVE_SMS_PERMISSION_STATUS:",
-    READ_SMS_PERMISSION_STATUS,
-    RECEIVE_SMS_PERMISSION_STATUS
-  );
   const hasUserPermission = READ_SMS_PERMISSION_STATUS && RECEIVE_SMS_PERMISSION_STATUS;
   return (
     <View style={styles.permissionBody}> 
@@ -39,6 +34,7 @@ const PermissionStatus = ({
 };
 
 export default function Page() {
+  const [isLoading, setIsLoading] = React.useState(true);
   const {
     appState,
     buttonClickHandler,
@@ -55,8 +51,12 @@ export default function Page() {
     smsMessagesData,
   } = useApp();
 
-  const handleSmsRead = () => {
-    console.log('SMS Read')
+  React.useEffect(() => {
+    handleSmsRead();
+  }, []);
+
+  const handleSmsRead = async () => {
+    setIsLoading(true);
     // Notifications.scheduleNotificationAsync({
     //   content: {
     //     title: 'Look at that notification',
@@ -70,16 +70,21 @@ export default function Page() {
     //   },
     //   identifier: 'notification-sms'
     // })
-    buttonClickHandler();
+    await buttonClickHandler();
+    setIsLoading(false);
   }
 
-  const Item = ({ body, address }: Pick<SmsMessage, 'body' | 'address'>) => (
+  const Item = ({ body, address, read, seen, deleted }: Pick<SmsMessage, 'deleted' | 'body' | 'address' | 'read' | 'seen'>) => (
     <View>
-      <Text style={styles.headerText}>{ address }</Text>
+      <Text style={styles.headerText}>{ `${address} - ${deleted ? 'Deleted' : 'Not deleted'} - ${read ? 'Read' : 'Unread'} - ${seen ? 'Seen' : 'Not'}` }</Text>
       <Text>{body}</Text>
     </View>
   );
 
+  const showData = () => {
+    return !isLoading && !smsError;
+  }
+  
   return (
     <SafeAreaView style={styles.container}>
       <View>
@@ -91,32 +96,39 @@ export default function Page() {
           requestReadSMSPermission={requestReadSMSPermission}
         />
 
-        <View>
-          <Title style={styles.headerText}>Total unread messages: { smsMessagesData.length }</Title>
-        </View>
-        <DataTable>
-          {
-            <FlatList
-              style={styles.flatListStyle}
-              data={smsMessagesData}
-              renderItem={({ item }) => <Item body={item.body} address={item.address} />}
-              keyExtractor={item => item.id}
-            />   
-          }
-          <DataTable.Row>
-            <DataTable.Cell>
-              <Text>smsError:</Text>
-            </DataTable.Cell>
-            <DataTable.Cell>{smsError + "" || "null"}</DataTable.Cell>
-          </DataTable.Row>
-
-          <Button onPress={checkPermissions} mode="contained">
-            Recheck permission state
+        <View style={styles.buttonContainer}>
+          <Button style={styles.button} onPress={checkPermissions} mode="contained" disabled={isLoading}>
+            Recheck permission
           </Button>
-          <Button onPress={handleSmsRead} mode="contained">
+          <Button onPress={handleSmsRead} mode="contained" disabled={isLoading}>
             Start
           </Button>
-        </DataTable>
+        </View>
+
+        {
+          showData && (
+            <View>
+              <Title style={styles.headerText}>Total unread messages: { smsMessagesData.length }</Title>
+            </View>
+          )
+        }
+
+        {
+          showData && <FlatList
+            style={styles.flatListStyle}
+            data={smsMessagesData}
+            renderItem={({ item }) => <Item deleted={item.deleted} seen={item.seen} read={item.read} body={item.body} address={item.address} />}
+            keyExtractor={item => `${item._id}${item.date}`}
+          />   
+        }
+
+        {
+          isLoading && <Text>Loading...</Text>
+        }
+
+        {
+          smsError && <Text>Error: {smsError}</Text>
+        }
       </View>
     </SafeAreaView>
   );
@@ -126,6 +138,17 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     paddingBottom: 32,
+  },
+  buttonContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignContent: 'center',
+    marginTop: 10,
+    gap: 10,
+  },
+  button: {
+    flex: 1,
   },
   mainTitle: {
     paddingBottom: 5,
