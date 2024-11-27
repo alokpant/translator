@@ -1,15 +1,9 @@
-import { Message } from "@/domain/entities/Message";
-import React, { useEffect, useState } from "react";
-import { FlatList, Text, View } from "react-native";
-import SmsListener from 'react-native-android-sms-listener';
-import {
-  Button,
-  DataTable,
-  Title,
-  Provider as PaperProvider,
-  Divider,
-} from "react-native-paper";
+import React from "react";
+import { View, Text } from "react-native";
+import { Button, DataTable, Title, Provider as PaperProvider, Divider } from "react-native-paper";
 import useApp from "@/app/hooks/useApp";
+import { SafeAreaView } from "react-native-safe-area-context";
+// import * as Notifications from 'expo-notifications'
 
 const PermissionStatus = ({
   READ_SMS_PERMISSION_STATUS,
@@ -22,30 +16,17 @@ const PermissionStatus = ({
     RECEIVE_SMS_PERMISSION_STATUS
   );
   return (
-    <DataTable>
-      <DataTable.Header>
-        <DataTable.Title>Permission Status</DataTable.Title>
-      </DataTable.Header>
-
-      <DataTable.Row>
-        <DataTable.Cell>READ_SMS:</DataTable.Cell>
-        <DataTable.Cell>
-          {READ_SMS_PERMISSION_STATUS + "" || "null"}
-        </DataTable.Cell>
-      </DataTable.Row>
-      <DataTable.Row>
-        <DataTable.Cell>RECEIVE_SMS:</DataTable.Cell>
-        <DataTable.Cell>
-          {RECEIVE_SMS_PERMISSION_STATUS + "" || "null"}
-        </DataTable.Cell>
-      </DataTable.Row>
-
-      {(!READ_SMS_PERMISSION_STATUS || !RECEIVE_SMS_PERMISSION_STATUS) && (
-        <Button onPress={requestReadSMSPermission} mode="contained">
-          Request Permission
-        </Button>
-      )}
-    </DataTable>
+    <SafeAreaView>
+      <View>
+        <Text>{READ_SMS_PERMISSION_STATUS + "" || "null"}</Text>
+        <Text>{RECEIVE_SMS_PERMISSION_STATUS + "" || "null"}</Text>
+        {(!READ_SMS_PERMISSION_STATUS || !RECEIVE_SMS_PERMISSION_STATUS) && (
+          <Button onPress={requestReadSMSPermission} mode="contained">
+            Request Permission
+          </Button>
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -65,10 +46,27 @@ export default function Page() {
     smsError,
   } = useApp();
 
+  const handleSmsRead = () => {
+    console.log('SMS Read')
+    // Notifications.scheduleNotificationAsync({
+    //   content: {
+    //     title: 'Look at that notification',
+    //     body: "I'm so proud of myself!",
+    //     autoDismiss: false,
+    //     sticky: true
+    //   },
+    //   trigger: {
+    //     seconds: 10,
+    //     repeats: true,
+    //   },
+    //   identifier: 'notification-sms'
+    // })
+    buttonClickHandler();
+  }
+
   return (
     <PaperProvider>
       <View>
-        {/* <StatusBar style="auto" /> */}
         <Title>ExpoReadSMS - Test Application (Expo)</Title>
 
         <DataTable>
@@ -112,7 +110,7 @@ export default function Page() {
           <Button onPress={checkPermissions} mode="contained">
             Recheck permission state
           </Button>
-          <Button onPress={buttonClickHandler} mode="contained">
+          <Button onPress={handleSmsRead} mode="contained">
             Start
           </Button>
         </DataTable>
