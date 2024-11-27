@@ -1,5 +1,5 @@
-import { Message } from "../entities/Message";
+import { SmsMessage } from "../entities/Message";
 
 export interface SmsRepository {
-  fetchSms(filter?: Record<string, any>): Promise<Array<Message>>;
+  fetchSms(filter?: Record<string, any>): Promise<Array<SmsMessage>>;
 }

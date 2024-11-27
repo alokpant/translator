@@ -1,8 +1,8 @@
-import { Message } from '@/domain/entities/Message';
+import { SmsMessage } from '@/domain/entities/Message';
 import { PermissionsAndroid } from 'react-native'
 import SmsAndroid from 'react-native-get-sms-android'
 
-export default async function fetchSmsFromDevice(filter?: Record<string, any>): Promise<Message[]> {
+export default async function fetchSmsFromDevice(filter?: Record<string, any>): Promise<SmsMessage[]> {
   try {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.READ_SMS,

@@ -4,6 +4,8 @@ import {
   requestReadSMSPermission,
   startReadSMS,
 } from "@maniac-tech/react-native-expo-read-sms";
+import { Message, SmsMessage } from "@/domain/entities/Message";
+import loadSms from "./loadSms";
 
 const useApp = () => {
   const [appState, setAppState] = useState(null);
@@ -16,11 +18,12 @@ const useApp = () => {
   const [smsMessageNumber, setSmsMessageNumber] = useState(null);
   const [smsMessageBody, setSmsMessageBody] = useState(null);
   const [smsError, setSMSError] = useState(null);
+  const [smsMessagesData, setSmsMessagesData] = useState<SmsMessage[]>([]);
 
-  const buttonClickHandler = () => {
-    console.log('buttonClicked');
+  const buttonClickHandler = async () => {
     if (hasReceiveSMSPermission && hasReadSMSPermission) {
       startReadSMS(successCallbackFunction, failureCallbackFunction);
+      setSmsMessagesData(await loadSms());
     }
   };
 
@@ -92,6 +95,18 @@ const useApp = () => {
     console.log(smsPermissionState, 'sms permission state changed');
   }, [smsPermissionState]);
 
+  useEffect(() => {
+    // console.log('---- Sms message changed')
+    // console.log('')
+    // console.log('')
+    // console.log('')
+    // console.log(smsMessagesData);
+    // console.log('')
+    // console.log('')
+    // console.log('')
+    // console.log('---- Sms message changed')
+  }, [smsMessagesData]);
+
 
   return {
     appState,
@@ -106,6 +121,7 @@ const useApp = () => {
     smsMessageBody,
     smsMessageNumber,
     smsError,
+    smsMessagesData,
   };
 };
 
