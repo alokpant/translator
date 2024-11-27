@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { PermissionsAndroid } from "react-native";
-
 import {
   requestReadSMSPermission,
   startReadSMS,
@@ -19,12 +18,16 @@ const useApp = () => {
   const [smsError, setSMSError] = useState(null);
 
   const buttonClickHandler = () => {
-    startReadSMS(callbackFn1, callbackFn2);
+    console.log('buttonClicked');
+    if (hasReceiveSMSPermission && hasReadSMSPermission) {
+      startReadSMS(successCallbackFunction, failureCallbackFunction);
+    }
   };
 
-  const callbackFn1 = (status, sms, error) => {
+  const successCallbackFunction = (status, sms, error) => {
     setSmsPermissionState("Success Callback!");
 
+    console.log('successCallbackFunction:', status, sms, error);
     if (status === "Start Read SMS successfully") {
       setSuccessCallbackStatus("Start Read SMS successfully");
       setSmsMessageData(sms);
@@ -37,7 +40,9 @@ const useApp = () => {
     }
   };
 
-  const callbackFn2 = (status, sms, error) => {
+  const failureCallbackFunction = (status, sms, error) => {
+    console.log('failureCallbackFunction:', status, sms, error);
+
     setSmsPermissionState("Error Callback!");
     setErrorCallbackStatus("Start Read SMS failed");
   };
@@ -78,8 +83,15 @@ const useApp = () => {
 
   useEffect(() => {
     if (hasReceiveSMSPermission && hasReadSMSPermission) {
+      startReadSMS(successCallbackFunction, failureCallbackFunction);
     }
   }, [hasReceiveSMSPermission, hasReadSMSPermission]);
+
+
+  useEffect(() => {
+    console.log(smsPermissionState, 'sms permission state changed');
+  }, [smsPermissionState]);
+
 
   return {
     appState,
