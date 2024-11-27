@@ -1,21 +1,34 @@
 {
   "expo": {
+    "version": "1.0.0",
+    "userInterfaceStyle": "light",
     "scheme": "acme",
-    "userInterfaceStyle": "automatic",
-    "orientation": "default",
+    "orientation": "portrait",
     "web": {
       "output": "static",
       "bundler": "metro"
     },
     "plugins": [
+      "expo-updates",
       [
-        "expo-router",
+        "expo-build-properties",
         {
-          "origin": "https://n"
+          "android": {
+            "minSdkVersion": 34,
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "buildToolsVersion": "34.0.0"
+          }
         }
       ]
     ],
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
     "name": "translator",
-    "slug": "translator"
+    "slug": "translator",
+    "android": {
+      "package": "com.anonymous.translator"
+    }
   }
 }

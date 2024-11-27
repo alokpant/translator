@@ -1,0 +1,16 @@
+import { SmsMessage } from "@/domain/entities/Message";
+import { SmsRepositoryImpl } from "@/infrastructure/nativeModules/fetchSmsFromDevice";
+import { FetchSmsUseCase } from "@/usecases/FetchSmsUseCase";
+
+const smsRepository = new SmsRepositoryImpl();
+const fetchSmsUseCase = new FetchSmsUseCase(smsRepository)
+const UNREAD_MESSAGES = 0;
+
+export default async function loadSms(): Promise<SmsMessage[]> {
+  try {
+    const messages = await fetchSmsUseCase.execute({ read: UNREAD_MESSAGES });
+    return messages;
+  } catch (error) {
+    console.error('Error loading SMS', error);
+  }
+}
